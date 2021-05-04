@@ -13,12 +13,12 @@ use App\Http\Controllers\AdminController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::post('app/create_tag', 'AdminController@addTag');
-Route::get('app/get_tag', 'AdminController@getTag');
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::post('app/create_tag', 'AdminController@addTag');
+Route::post('app/edit_tag', 'AdminController@editTag');
+Route::get('app/get_tag', 'AdminController@getTag');
+Route::post('app/delete_tag', 'AdminController@deleteTag');
+
 
 
 Route::any('{slug}', function () {
