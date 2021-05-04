@@ -7,9 +7,9 @@
           class="_1adminOverveiw_table_recent _box_shadow _border_radious _mar_b30 _p20"
         >
           <p class="_title0">
-            Tags
+            Categories
             <Button @click="addModal = true"
-              ><Icon type="md-add" />Add tag</Button
+              ><Icon type="md-add" />Add category</Button
             >
           </p>
           <div class="_overflow _table_div">
@@ -50,11 +50,27 @@
         <!-- tag adding model -->
         <Modal
           v-model="addModal"
-          title="Add tag"
+          title="Add category"
           :mask-closable="false"
           :closable="false"
         >
-          <Input v-model="data.tagName" placeholder="Add tag name" />
+          <Input v-model="data.tagName" placeholder="Add category name" />
+          <div class="space"></div>
+          <Upload
+            multiple
+            type="drag"
+            :headers="{ 'x-csrf-token': token }"
+            action="/app/upload"
+          >
+            <div style="padding: 20px 0">
+              <Icon
+                type="ios-cloud-upload"
+                size="52"
+                style="color: #3399ff"
+              ></Icon>
+              <p>Click or drag files here to upload</p>
+            </div>
+          </Upload>
           <div slot="footer">
             <Button type="default" @click="addModal = false">Close</Button>
             <Button
@@ -130,6 +146,8 @@ export default {
       isDeleting: false,
       deleteItem: {},
       i: -1,
+      deletingIndex: -1,
+      token: "",
     };
   },
   methods: {
@@ -195,6 +213,7 @@ export default {
     },
   },
   async created() {
+    this.token = window.Laravel.csrfToken;
     const res = await this.callApi("get", "app/get_tag");
     if (res.status === 200) {
       this.tags = res.data;
