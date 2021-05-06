@@ -9,10 +9,11 @@
     <link rel="stylesheet" href="/css/all.css">
     <script>
         (function() {
-            window.Laravel = {
-                csrfToken: '{{csrf_token()}}'
+            window.Laravel = {  
+                csrfToken: '{{ csrf_token() }}'
             };
         })();
+
     </script>
 
 </head>
@@ -23,6 +24,6 @@
 
     </div>
 </body>
-<script src="{{mix('/js/app.js')}}"></script>
+<script src="{{ mix('/js/app.js') }}"></script>
 
 </html>
