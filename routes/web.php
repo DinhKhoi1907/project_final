@@ -19,6 +19,7 @@ Route::post('app/edit_tag', 'AdminController@editTag');
 Route::get('app/get_tag', 'AdminController@getTag');
 Route::post('app/delete_tag', 'AdminController@deleteTag');
 Route::post('app/upload', 'AdminController@upload');
+Route::post('app/delete_image', 'AdminController@deleteImage');
 
 
 Route::any('/', function () {

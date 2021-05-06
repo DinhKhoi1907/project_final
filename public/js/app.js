@@ -2057,11 +2057,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       data: {
-        tagName: ""
+        iconimage: "",
+        categoryName: ""
       },
       addModal: false,
       editModal: false,
@@ -2221,6 +2226,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.deleteItem = tag;
       this.i = i;
       this.showDeleteModal = true;
+    },
+    handleSuccess: function handleSuccess(res, file) {
+      this.data.iconimage = res;
+    },
+    handleFormatError: function handleFormatError(file) {
+      this.$Notice.warning({
+        title: "The file format is incorrect",
+        desc: "File format of " + file.name + " is incorrect, please select jpg or png."
+      });
+    },
+    handleMaxSize: function handleMaxSize(file) {
+      this.$Notice.warning({
+        title: "Exceeding file size limit",
+        desc: "File  " + file.name + " is too large, no more than 2M."
+      });
     }
   },
   created: function created() {
@@ -68025,6 +68045,10 @@ var render = function() {
                     multiple: "",
                     type: "drag",
                     headers: { "x-csrf-token": _vm.token },
+                    "on-success": _vm.handleSuccess,
+                    "max-size": 2048,
+                    "on-exceeded-size": _vm.handleMaxSize,
+                    "before-upload": _vm.handleBeforeUpload,
                     action: "/app/upload"
                   }
                 },

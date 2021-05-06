@@ -57,9 +57,18 @@
           <Input v-model="data.tagName" placeholder="Add category name" />
           <div class="space"></div>
           <Upload
-            multiple
+            ref="uploads"
             type="drag"
-            :headers="{ 'x-csrf-token': token }"
+            :headers="{
+              'x-csrf-token': token,
+              'X-Requested-With': 'XMLHttpRequest',
+            }"
+            :on-success="handleSuccess"
+            :on-error="handleError"
+            :on-format-error="handleFormatError"
+            :max-size="2048"
+            :on-exceeded-size="handleMaxSize"
+            :before-upload="handleBeforeUpload"
             action="/app/upload"
           >
             <div style="padding: 20px 0">
@@ -71,6 +80,11 @@
               <p>Click or drag files here to upload</p>
             </div>
           </Upload>
+          <div class="image_thumb" v-if="data.iconImage">
+            <img :src="`/uploads/${data.iconImage}`" >
+            <div class="demo_upload_list_cover">
+            <Icon type="ios-trash-outline" @click="deleteImage"></Icon></div>
+          </div>
           <div slot="footer">
             <Button type="default" @click="addModal = false">Close</Button>
             <Button
@@ -132,8 +146,10 @@ export default {
   data() {
     return {
       data: {
-        tagName: "",
+        iconimage: "",
+        categoryName: "",
       },
+
       addModal: false,
       editModal: false,
       isAdding: false,
@@ -211,6 +227,42 @@ export default {
       this.i = i;
       this.showDeleteModal = true;
     },
+    handleSuccess(res, file) {
+      this.data.iconimage = res;
+    },
+    handleError(res, file) {
+      console.log("res", res);
+      console.log("file", file);
+      this.$Notice.warning({
+        title: "The file format is incorrect",
+        desc: `${file.errors.file.length ? file.errors.file.length[0] : 'something went wrong!'}`
+      });
+    },
+    handleFormatError(file) {
+      this.$Notice.warning({
+        title: "The file format is incorrect",
+        desc:
+          "File format of " +
+          file.name +
+          " is incorrect, please select jpg or png.",
+      });
+    },
+    handleMaxSize(file) {
+      this.$Notice.warning({
+        title: "Exceeding file size limit",
+        desc: "File  " + file.name + " is too large, no more than 2M.",
+      });
+    },
+    async deleteImage() {
+      let image = this.data.iconImage;
+      this.data.iconImage = '';
+      this.$refs.uploads.clearFiles()
+      const res = await this.callApi('post', 'app/delete_image', {imageName: image})
+      if (res.status != 200) {
+        this.data.imageImage = image
+        this.swr()
+      }
+    }
   },
   async created() {
     this.token = window.Laravel.csrfToken;
