@@ -2038,6 +2038,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2057,7 +2063,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       isDeleting: false,
       deleteItem: {},
       deletingIndex: -1,
-      token: ""
+      token: "",
+      uploadList: []
     };
   },
   methods: {
@@ -2086,10 +2093,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.abrupt("return", _this.swr("Icon image is required"));
 
               case 4:
-                _context.next = 6;
+                _this.data.iconImage = "uploads/".concat(_this.data.iconImage);
+                _context.next = 7;
                 return _this.callApi("post", "app/create_category", _this.data);
 
-              case 6:
+              case 7:
                 res = _context.sent;
 
                 if (res.status === 201) {
@@ -2101,20 +2109,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   _this.data.categoryName = "";
                   _this.data.iconImage = "";
                 } else {
-                  if (res.status === 420) {
-                    if (res.data.errors.ca) {
-                      _this.i(res.data.errors.categoryName[0]);
+                  if (res.status == 422) {
+                    if (res.data.errors.categoryName) {
+                      _this.e(res.data.errors.categoryName[0]);
                     }
 
-                    if (res.data.errors.ca) {
-                      _this.i(res.data.errors.iconImage[0]);
+                    if (res.data.errors.iconImage) {
+                      _this.e(res.data.errors.iconImage[0]);
                     }
                   } else {
                     _this.swr();
                   }
                 }
 
-              case 8:
+              case 9:
               case "end":
                 return _context.stop();
             }
@@ -2186,13 +2194,25 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     var _this3 = this;
 
     return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+      var res;
       return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
               _this3.token = window.Laravel.csrfToken;
+              _context3.next = 3;
+              return _this3.callApi("get", "app/get_category");
 
-            case 1:
+            case 3:
+              res = _context3.sent;
+
+              if (res.status === 200) {
+                _this3.categories = res.data;
+              } else {
+                _this3.swr();
+              }
+
+            case 5:
             case "end":
               return _context3.stop();
           }
@@ -2200,16 +2220,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }, _callee3);
     }))();
   }
-  /* async created() {
-    this.token = window.Laravel.csrfToken;
-    const res = await this.callApi("get", "app/get_tag");
-    if (res.status === 200) {
-      this.tags = res.data;
-    } else {
-      this.swr();
-    }
-  }, */
-
 });
 
 /***/ }),
@@ -67929,7 +67939,78 @@ var render = function() {
                 1
               ),
               _vm._v(" "),
-              _vm._m(0)
+              _c("div", { staticClass: "_overflow _table_div" }, [
+                _c(
+                  "table",
+                  { staticClass: "_table" },
+                  [
+                    _vm._m(0),
+                    _vm._v(" "),
+                    _vm._l(_vm.categories, function(category, i) {
+                      return _c("tr", { key: i }, [
+                        _c("td", [_vm._v(_vm._s(category.id))]),
+                        _vm._v(" "),
+                        _c("td", { staticClass: "table_image" }, [
+                          _c("img", { attrs: { src: category.iconImage } })
+                        ]),
+                        _vm._v(" "),
+                        _c("td", { staticClass: "_table_name" }, [
+                          _vm._v(
+                            "\n                " +
+                              _vm._s(category.categoryName) +
+                              "\n              "
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("td", [
+                          _vm._v(
+                            "\n                " +
+                              _vm._s(category.created_at) +
+                              "\n              "
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c(
+                          "td",
+                          [
+                            _c(
+                              "Button",
+                              {
+                                attrs: { type: "info", size: "small" },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.showEditModal(category, i)
+                                  }
+                                }
+                              },
+                              [_vm._v("Edit")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "Button",
+                              {
+                                attrs: {
+                                  type: "error",
+                                  size: "small",
+                                  loading: category.isDeleting
+                                },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.showDeletingModal(category, i)
+                                  }
+                                }
+                              },
+                              [_vm._v("Delete")]
+                            )
+                          ],
+                          1
+                        )
+                      ])
+                    })
+                  ],
+                  2
+                )
+              ])
             ]
           ),
           _vm._v(" "),
@@ -67953,11 +68034,11 @@ var render = function() {
               _c("Input", {
                 attrs: { placeholder: "Add category name" },
                 model: {
-                  value: _vm.data.tagName,
+                  value: _vm.data.categoryName,
                   callback: function($$v) {
-                    _vm.$set(_vm.data, "tagName", $$v)
+                    _vm.$set(_vm.data, "categoryName", $$v)
                   },
-                  expression: "data.tagName"
+                  expression: "data.categoryName"
                 }
               }),
               _vm._v(" "),
@@ -68065,18 +68146,16 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "_overflow _table_div" }, [
-      _c("table", { staticClass: "_table" }, [
-        _c("tr", [
-          _c("th", [_vm._v("ID")]),
-          _vm._v(" "),
-          _c("th", [_vm._v("Category name")]),
-          _vm._v(" "),
-          _c("th", [_vm._v("Created at")]),
-          _vm._v(" "),
-          _c("th", [_vm._v("Action")])
-        ])
-      ])
+    return _c("tr", [
+      _c("th", [_vm._v("ID")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Icon Image")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Category Name")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Create at")]),
+      _vm._v("t\n              "),
+      _c("th", [_vm._v("Action")])
     ])
   }
 ]
@@ -84775,7 +84854,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       });
     },
     swr: function swr() {
-      var desc = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Somethign want wrong! Please try again';
+      var desc = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Something want wrong! Please try again';
       var title = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "Oops!";
       this.$Notice.error({
         title: title,

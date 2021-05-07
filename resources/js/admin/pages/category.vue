@@ -17,33 +17,39 @@
               <!-- TABLE TITLE -->
               <tr>
                 <th>ID</th>
-                <th>Category name</th>
-                <th>Created at</th>
+                 <th>Icon Image</th>
+                <th>Category Name</th>
+                <th>Create at</th>t
                 <th>Action</th>
               </tr>
               <!-- ITEMS -->
-              <!-- <tr v-for="(tag, i) in tags" :key="i">
-                <td>{{ tag.id }}</td>
-                <td class="_table_name">
-                  {{ tag.tagName }}
+              <tr v-for="(category, i) in categories" :key="i">
+                <td>{{ category.id }}</td>
+                 <td class="table_image">
+                  <img :src="category.iconImage" /> 
                 </td>
-                <td>{{ tag.created_at }}</td>
+                <td class="_table_name">
+                  {{ category.categoryName }}
+                </td>
+                <td>
+                  {{category.created_at}}
+                </td>
                 <td>
                   <Button
                     type="info"
                     size="small"
-                    @click="showEditModal(tag, i)"
+                    @click="showEditModal(category, i)"
                     >Edit</Button
                   >
                   <Button
                     type="error"
                     size="small"
-                    @click="showDeletingModal(tag, i)"
-                    :loading="tag.isDeleting"
+                    @click="showDeletingModal(category, i)"
+                    :loading="category.isDeleting"
                     >Delete</Button
                   >
                 </td>
-              </tr> -->
+              </tr>
             </table>
           </div>
         </div>
@@ -55,7 +61,7 @@
           :mask-closable="false"
           :closable="false"
         >
-          <Input v-model="data.tagName" placeholder="Add category name" />
+          <Input v-model="data.categoryName" placeholder="Add category name" />
           <div class="space"></div>
           <!-- Upload file(image) -->
           <Upload
@@ -90,7 +96,7 @@
               <Icon type="ios-trash-outline" @click="deleteImage"></Icon>
             </div>
           </div>
-          
+
           <!-- Custom Footer Modal -->
           <div slot="footer">
             <Button type="default" @click="addModal = false">Close</Button>
@@ -130,6 +136,7 @@ export default {
       deleteItem: {},
       deletingIndex: -1,
       token: "",
+      uploadList: [],
     };
   },
   methods: {
@@ -138,6 +145,7 @@ export default {
         return this.swr("Category name is required");
       if (this.data.iconImage.trim() == "")
         return this.swr("Icon image is required");
+      this.data.iconImage = `uploads/${this.data.iconImage}`;
       const res = await this.callApi("post", "app/create_category", this.data);
       if (res.status === 201) {
         this.categories.unshift(res.data);
@@ -146,12 +154,12 @@ export default {
         this.data.categoryName = "";
         this.data.iconImage = "";
       } else {
-        if (res.status === 420) {
-          if (res.data.errors.ca) {
-            this.i(res.data.errors.categoryName[0]);
+        if (res.status == 422) {
+          if (res.data.errors.categoryName) {
+            this.e(res.data.errors.categoryName[0]);
           }
-          if (res.data.errors.ca) {
-            this.i(res.data.errors.iconImage[0]);
+          if (res.data.errors.iconImage) {
+            this.e(res.data.errors.iconImage[0]);
           }
         } else {
           this.swr();
@@ -159,7 +167,7 @@ export default {
       }
     },
     handleSuccess(res, file) {
-        this.data.iconImage = res;
+      this.data.iconImage = res;
     },
     handleError(res, file) {
       console.log("res", res);
@@ -203,16 +211,13 @@ export default {
   },
   async created() {
     this.token = window.Laravel.csrfToken;
-  },
-  /* async created() {
-    this.token = window.Laravel.csrfToken;
-    const res = await this.callApi("get", "app/get_tag");
+    const res = await this.callApi("get", "app/get_category");
     if (res.status === 200) {
-      this.tags = res.data;
+      this.categories = res.data;
     } else {
       this.swr();
     }
-  }, */
+  },
 };
 </script>
 
